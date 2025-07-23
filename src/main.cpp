@@ -5,7 +5,7 @@
 #include <TinyGPSPlus.h>
 //#include <SoftwareSerial.h>
 #include <HardwareSerial.h>
-#include <BluetoothSerial.h>
+//#include <BluetoothSerial.h>
 #include "./images.h"
 #include <eeprom.h>
 #include <Button2.h>
@@ -315,7 +315,7 @@ void initGPS()
 
     last_blink = 0;
 
-    do 
+    /*do 
     {
         time = millis();
 
@@ -337,7 +337,9 @@ void initGPS()
 
         check_activity();
 
-    } while (!readGPS());
+    } while (!readGPS());*/
+
+    ss.write("$PCAS02,100*1E\r\n");
 
     GPSinitSprite.fillSprite(TFT_BLACK);
     GPSinitSprite.pushSprite(45,97);
@@ -351,7 +353,10 @@ bool readGPS()
     bool result = false;
 
     while (ss.available() > 0)
+    {
+ //           Serial.println(ss.read());
             gps.encode(ss.read());
+    }
 
     if (gps.satellites.isUpdated()){
         GPS_info.satellites = gps.satellites.value();
@@ -587,6 +592,10 @@ void initScreen()
     setting_id = 0;
 
     last_button_press = millis();
+
+    #ifdef DEBUG
+        Serial.println("***Screen initialization complete!***");
+    #endif
 
 
 }
@@ -827,7 +836,7 @@ void refreshSat(){
         else strcpy(data,"IMP");
     
     // if bluetooth connected
-    satSprite.pushImage(0,2,20,26,(uint16_t *) bluetooth_20X26);
+    //satSprite.pushImage(0,2,20,26,(uint16_t *) bluetooth_20X26);
 
     if ((millis() - GPS_info.location.upd_time) < SIGNAL_HEALTH_PERIOD)
         satSprite.pushImage(24,2,26,26,(uint16_t *) satellite_dish_26x26);
@@ -956,19 +965,19 @@ void screen_settings()
 void screen_speed()
 {
             dataSprite.drawFastHLine(0,0,135,TFT_WHITE);
-            dataSprite.drawCentreString(F("SPEED"),67,3,4);
+            dataSprite.drawCentreString(F(LANG_SPEED),67,3,4);
             dataSprite.drawFastHLine(0,27,135,TFT_WHITE);
             
 
             if (!config_info.imperial) strcpy(data,"kmph");
                 else strcpy(data,"mph");
 
-            dataSprite.drawString(F("Cur."),0,34,4);
+            dataSprite.drawString(F(LANG_CUR),0,34,4);
             dataSprite.drawRightString(data,135,42,2);
             //width = dataSprite.drawNumber(GPS_info.speed.kmph,0,68,6);
             dataSprite.drawFastHLine(0,120,135,TFT_WHITE);
 
-            dataSprite.drawString(F("Max."),0,127,4);
+            dataSprite.drawString(F(LANG_MAX),0,127,4);
             dataSprite.drawRightString(data,135,135,2);
             //width = dataSprite.drawNumber(GPS_info.stats.max_kmph,0,161,6);
             dataSprite.drawFastHLine(0,210,135,TFT_WHITE);
@@ -987,18 +996,18 @@ void screen_speed()
 void screen_altitude()
 {
             dataSprite.drawFastHLine(0,0,135,TFT_WHITE);
-            dataSprite.drawCentreString(F("ALTITUDE"),67,3,4);
+            dataSprite.drawCentreString(F(LANG_ALTITUDE),67,3,4);
             dataSprite.drawFastHLine(0,27,135,TFT_WHITE);
             
 
             if (!config_info.imperial) strcpy(data,"meters");
                 else strcpy(data,"feet");
 
-            dataSprite.drawString(F("Cur."),0,34,4);
+            dataSprite.drawString(F(LANG_CUR),0,34,4);
             dataSprite.drawRightString(data,135,42,2);
             dataSprite.drawFastHLine(0,120,135,TFT_WHITE);
 
-            dataSprite.drawString(F("Max."),0,127,4);
+            dataSprite.drawString(F(LANG_MAX),0,127,4);
             dataSprite.drawRightString(data,135,135,2);
             dataSprite.drawFastHLine(0,210,135,TFT_WHITE);
 
@@ -1016,19 +1025,19 @@ void screen_altitude()
 void screen_distance()
 {
             dataSprite.drawFastHLine(0,0,135,TFT_WHITE);
-            dataSprite.drawCentreString(F("DISTANCE"),67,3,4);
+            dataSprite.drawCentreString(F(LANG_DISTANCE),67,3,4);
             dataSprite.drawFastHLine(0,27,135,TFT_WHITE);
             
 
             if (!config_info.imperial) strcpy(data,"meters");
                 else strcpy(data,"feet");
 
-            dataSprite.drawString(F("Org."),0,34,4);
+            dataSprite.drawString(F(LANG_ORIGIN),0,34,4);
             dataSprite.drawRightString(data,135,42,2);
             //width = dataSprite.drawNumber(GPS_info.speed.kmph,0,68,6);
             dataSprite.drawFastHLine(0,120,135,TFT_WHITE);
 
-            dataSprite.drawString(F("Trv."),0,127,4);
+            dataSprite.drawString(F(LANG_TRAVEL),0,127,4);
             dataSprite.drawRightString(data,135,135,2);
             //width = dataSprite.drawNumber(GPS_info.stats.max_kmph,0,161,6);
             dataSprite.drawFastHLine(0,210,135,TFT_WHITE);
@@ -1047,15 +1056,15 @@ void screen_distance()
 void screen_location()
 {
             dataSprite.drawFastHLine(0,0,135,TFT_WHITE);
-            dataSprite.drawCentreString(F("LOCATION"),67,3,4);
+            dataSprite.drawCentreString(F(LANG_LOCATION),67,3,4);
             dataSprite.drawFastHLine(0,27,135,TFT_WHITE);
 
-            dataSprite.drawString(F("Latitude"),0,34,4);
+            dataSprite.drawString(F(LANG_LATITUDE),0,34,4);
             sprintf(data, "%.6lf" ,GPS_info.location.latitude);
             dataSprite.drawString(data,0,90,4);//68
             dataSprite.drawFastHLine(0,120,135,TFT_WHITE);
 
-            dataSprite.drawString(F("Longitude"),0,127,4);
+            dataSprite.drawString(F(LANG_LONGITUDE),0,127,4);
             sprintf(data, "%.6lf" ,GPS_info.location.longitude);
             dataSprite.drawString(data,0,183,4);//161
            // width = dataSprite.drawNumber(GPS_info.location.longitude,0,161,6);
@@ -1065,13 +1074,13 @@ void screen_location()
 void screen_gforce()
 {
             dataSprite.drawFastHLine(0,0,135,TFT_WHITE);
-            dataSprite.drawCentreString(F("G-FORCE"),67,3,4);
+            dataSprite.drawCentreString(F(LANG_GFORCE),67,3,4);
             dataSprite.drawFastHLine(0,27,135,TFT_WHITE);
 
-            dataSprite.drawString(F("Acc."),0,34,4);
+            dataSprite.drawString(F(LANG_ACC),0,34,4);
             dataSprite.drawFastHLine(0,120,135,TFT_WHITE);
 
-            dataSprite.drawString(F("Dec."),0,127,4);
+            dataSprite.drawString(F(LANG_DEC),0,127,4);
             dataSprite.drawFastHLine(0,210,135,TFT_WHITE);
 
             sprintf(data, "%.2f" ,(double) (GPS_info.stats.max_acceleration / 9.81));
