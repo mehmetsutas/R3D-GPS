@@ -339,7 +339,23 @@ void initGPS()
 
     } while (!readGPS());*/
 
-    ss.write("$PCAS02,100*1E\r\n");
+    #ifdef GPS_ATGM336H
+        ss.print("$PCAS02,100*1E\r\n");  //10hz
+        delay(1000);
+
+        ss.print("$PCAS11,3*1E\r\n");;   //Automotive mode
+        delay(1000);
+
+        ss.print("$PCAS01,5*19\r\n");;   //115200 baud
+        delay(1000);
+
+        ss.end();
+        delay(1000);
+
+        ss.begin(115200, SERIAL_8N1, GPS_RXPIN, GPS_TXPIN);
+
+        resetGPS();
+    #endif
 
     GPSinitSprite.fillSprite(TFT_BLACK);
     GPSinitSprite.pushSprite(45,97);
@@ -354,7 +370,7 @@ bool readGPS()
 
     while (ss.available() > 0)
     {
- //           Serial.println(ss.read());
+   //         Serial.println(ss.read());
             gps.encode(ss.read());
     }
 
@@ -875,7 +891,7 @@ u_int8_t checkBat()
 void screen_settings()
 {
             dataSprite.drawFastHLine(0,0,135,TFT_WHITE);
-            dataSprite.drawCentreString(F("SETTINGS"),67,3,4);
+            dataSprite.drawCentreString(F(LANG_SETTINGS),67,3,4);
             dataSprite.drawFastHLine(0,27,135,TFT_WHITE);
 
             switch (setting_id) {
@@ -904,7 +920,7 @@ void screen_settings()
 
             if (setting_id == 1) dataSprite.setTextColor(TFT_WHITE,TFT_DARKGREEN);
                 else dataSprite.setTextColor(TFT_WHITE,TFT_BLACK);
-            dataSprite.drawString(F("IMP."),0,30,4);
+            dataSprite.drawString(F(LANG_IMP),0,30,4);
             sprintf(data,"%d",(int) config_info.imperial);
             dataSprite.drawRightString(data,135,30,4);
             dataSprite.drawFastHLine(0,53,135,TFT_WHITE);
@@ -915,14 +931,14 @@ void screen_settings()
 
             if (setting_id == 2) dataSprite.setTextColor(TFT_WHITE,TFT_DARKGREEN);
                 else dataSprite.setTextColor(TFT_WHITE,TFT_BLACK);
-            dataSprite.drawString(F("D.Start"),0,56,4);
+            dataSprite.drawString(F(LANG_DSTART),0,56,4);
             sprintf(data,"%d",(int) config_info.drag.start_distance);
             dataSprite.drawRightString(data,135,56,4);
             dataSprite.drawFastHLine(0,79,135,TFT_WHITE);
 
             if (setting_id == 3) dataSprite.setTextColor(TFT_WHITE,TFT_DARKGREEN);
                 else dataSprite.setTextColor(TFT_WHITE,TFT_BLACK);
-            dataSprite.drawString(F("D.End"),0,82,4);
+            dataSprite.drawString(F(LANG_DEND),0,82,4);
             sprintf(data,"%d",(int) config_info.drag.end_distance);
             dataSprite.drawRightString(data,135,82,4);
             dataSprite.drawFastHLine(0,105,135,TFT_WHITE);
@@ -933,21 +949,21 @@ void screen_settings()
 
             if (setting_id == 4) dataSprite.setTextColor(TFT_WHITE,TFT_DARKGREEN);
                 else dataSprite.setTextColor(TFT_WHITE,TFT_BLACK);
-            dataSprite.drawString(F("A.Start"),0,108,4);
+            dataSprite.drawString(F(LANG_ASTART),0,108,4);
             sprintf(data,"%d",(int) config_info.acceleration.start_speed);
             dataSprite.drawRightString(data,135,108,4);
             dataSprite.drawFastHLine(0,131,135,TFT_WHITE);
 
             if (setting_id == 5) dataSprite.setTextColor(TFT_WHITE,TFT_DARKGREEN);
                 else dataSprite.setTextColor(TFT_WHITE,TFT_BLACK);
-            dataSprite.drawString(F("A.End"),0,134,4);
+            dataSprite.drawString(F(LANG_AEND),0,134,4);
             sprintf(data,"%d",(int) config_info.acceleration.end_speed);
             dataSprite.drawRightString(data,135,134,4);
             dataSprite.drawFastHLine(0,157,135,TFT_WHITE);
 
             if (setting_id == 6) dataSprite.setTextColor(TFT_WHITE,TFT_DARKGREEN);
                 else dataSprite.setTextColor(TFT_WHITE,TFT_BLACK);
-            dataSprite.drawString(F("Timer"),0,160,4);
+            dataSprite.drawString(F(LANG_TIMER),0,160,4);
             sprintf(data,"%d",(int) config_info.screen_off_time);
             dataSprite.drawRightString(data,135,160,4);
             dataSprite.drawFastHLine(0,183,135,TFT_WHITE);
@@ -1095,14 +1111,14 @@ void screen_gforce()
 void screen_scores()
 {
             dataSprite.drawFastHLine(0,0,135,TFT_WHITE);
-            dataSprite.drawCentreString(F("SCORES"),67,3,4);
+            dataSprite.drawCentreString(F(LANG_SCORES),67,3,4);
             dataSprite.drawFastHLine(0,27,135,TFT_WHITE);
             
 
             if (!config_info.imperial) sprintf(data,"%d-%dmeters",(int) config_info.drag.start_distance,(int) config_info.drag.end_distance);
                 else sprintf(data,"%d-%dfeet",(int) round(config_info.drag.start_distance / FEET_TO_M_FACTOR),(int) round(config_info.drag.end_distance / FEET_TO_M_FACTOR));
 
-            dataSprite.drawString(F("Drag"),0,34,4);
+            dataSprite.drawString(F(LANG_DRAG),0,34,4);
             dataSprite.drawRightString(data,135,42,2);
             //width = dataSprite.drawNumber(GPS_info.speed.kmph,0,68,6);
             dataSprite.drawFastHLine(0,120,135,TFT_WHITE);
@@ -1110,7 +1126,7 @@ void screen_scores()
             if (!config_info.imperial) sprintf(data,"%d-%dkmph",(int) config_info.acceleration.start_speed,(int) config_info.acceleration.end_speed);
                 else sprintf(data,"%d-%dmph",(int) round(config_info.acceleration.start_speed / M_TO_KM_FACTOR),(int) round(config_info.acceleration.end_speed / M_TO_KM_FACTOR));
 
-            dataSprite.drawString(F("Acc."),0,127,4);
+            dataSprite.drawString(F(LANG_ACC2),0,127,4);
             dataSprite.drawRightString(data,135,135,2);
             //width = dataSprite.drawNumber(GPS_info.stats.max_kmph,0,161,6);
             dataSprite.drawFastHLine(0,210,135,TFT_WHITE);
@@ -1152,7 +1168,7 @@ void screen_drag()
 
             if (drag_start) dataSprite.setTextColor(TFT_RED,TFT_BLACK);
 
-            dataSprite.drawCentreString(F("-0- DRAG"),67,3,4);
+            dataSprite.drawCentreString(F(LANG_0DRAG),67,3,4);
             dataSprite.drawFastHLine(0,27,135,TFT_WHITE);
             
             dataSprite.setTextColor(TFT_WHITE,TFT_BLACK);
@@ -1160,7 +1176,7 @@ void screen_drag()
             if (!config_info.imperial) sprintf(data,"0-%dmeters",(int) config_info.drag.end_distance);
                 else sprintf(data,"0-%dfeet",(int) round(config_info.drag.end_distance / FEET_TO_M_FACTOR));
 
-            dataSprite.drawString(F("Drag"),0,34,4);
+            dataSprite.drawString(F(LANG_DRAG),0,34,4);
             dataSprite.drawRightString(data,135,42,2);
             //width = dataSprite.drawNumber(GPS_info.speed.kmph,0,68,6);
             dataSprite.drawFastHLine(0,120,135,TFT_WHITE);
@@ -1168,7 +1184,7 @@ void screen_drag()
             if (!config_info.imperial) sprintf(data,"0-%dkmph",(int) config_info.acceleration.end_speed);
                 else sprintf(data,"0-%dmph",(int) round(config_info.acceleration.end_speed / M_TO_KM_FACTOR));
 
-            dataSprite.drawString(F("Acc."),0,127,4);
+            dataSprite.drawString(F(LANG_ACC2),0,127,4);
             dataSprite.drawRightString(data,135,135,2);
             //width = dataSprite.drawNumber(GPS_info.stats.max_kmph,0,161,6);
             dataSprite.drawFastHLine(0,210,135,TFT_WHITE);
@@ -1208,9 +1224,9 @@ void screen_drag()
             {
                 GPS_info.drag.start_time_alt = drag_count_time;
                 GPS_info.acceleration.start_time_alt = drag_count_time;
-                dataSprite.drawCentreString(F("GO"),67,33,4);
-                dataSprite.drawCentreString(F("GO"),67,92,4);
-                dataSprite.drawCentreString(F("GO"),67,151,4);
+                dataSprite.drawCentreString(F(LANG_GO),67,33,4);
+                dataSprite.drawCentreString(F(LANG_GO),67,92,4);
+                dataSprite.drawCentreString(F(LANG_GO),67,151,4);
             } else if (drag_countdown > 0)
             {
                 sprintf(data,"%d",drag_countdown);

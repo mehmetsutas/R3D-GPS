@@ -3,7 +3,7 @@
 #ifndef __CONFIGURATION__
     #define __CONFIGURATION__
 
-    #define DEBUG //uncomment to enable serial debug
+    /*#define DEBUG //uncomment to enable serial debug
     #define DEBUG_ACCELERATION
     #define DEBUG_ACCEL_STAT
     #define DEBUG_SPEED
@@ -12,8 +12,10 @@
     #define DEBUG_LOCATION
     #define DEBUG_SAT
     #define DEBUG_EEPROM
-    #define DEBUG_BATTERY
-    #define DEBUG_BAUD      230400
+    #define DEBUG_BATTERY*/
+    #define DEBUG_BAUD      115200
+
+    #define GPS_ATGM336H
 
     #define BLINK_PERIOD    1000
     #define SCREEN_REFRESH_PERIOD 500
@@ -30,7 +32,7 @@
     #define BAT_PIN         34
     #define BAT_READPIN     14
     #define BAT_ON_PIN      12
-    #define BAT_CONV_FACTOR 1.785 //2.04 //1.702
+    #define BAT_CONV_FACTOR 1.764 //2.04 //1.702
     #define MIN_USB_VOLTS   4.4
 
     #define BUTTON_A_PIN     0
@@ -53,7 +55,7 @@
 
     #define LANG_SPEED "HIZ"
     #define LANG_CUR "Anlik"
-    #define LANG_MAX "Max."
+    #define LANG_MAX "Maks."
 
     #define LANG_ALTITUDE "YUKSEKLIK"
 
@@ -66,9 +68,23 @@
     #define LANG_LONGITUDE "Boylam"
 
     #define LANG_GFORCE "G KUVVETI"
-    #define LANG_ACC "Hiz."
-    #define LANG_DEC "Fren"
+    #define LANG_ACC "Hizlanma"
+    #define LANG_DEC "Yavaslama"
 
+    #define LANG_SCORES "SKORLAR"
+    #define LANG_DRAG "Drag"   
+    #define LANG_ACC2 "Hizlan"
 
+    #define LANG_0DRAG "-0- DRAG"
+
+    #define LANG_SETTINGS "AYARLAR"
+    #define LANG_IMP "Imp."
+    #define LANG_DSTART "D. Basla"
+    #define LANG_DEND "D. Bitis"
+    #define LANG_ASTART "I. Basla"
+    #define LANG_AEND "I. Bitis"
+    #define LANG_TIMER "Ekr. Kapa"
+
+    #define LANG_GO "BASLA"
 
 #endif //__CONFIGURATION__
